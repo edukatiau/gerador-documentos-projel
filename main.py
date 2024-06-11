@@ -184,9 +184,12 @@ class Application:
           "Erro", "O campo NF deve ter no máximo 6 caracteres!")
       return False
 
+    nf = self.nf.get()
+    nf = nf[0:2] + '.' + nf[2:6]
+
     dataClient['{CLIENTE}'] = self.cliente.get()
     dataClient['{OS}'] = self.os.get()
-    dataClient['{NF}'] = self.nf.get()
+    dataClient['{NF}'] = nf
     return True
 
   # Função para gerar o documento
