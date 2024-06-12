@@ -2,7 +2,7 @@ import os
 from docx import Document
 from docx2pdf import convert
 
-from tkinter import END, Tk, Frame, Label, Entry, Button, LEFT, ttk
+from tkinter import END, BooleanVar, Checkbutton, Tk, Frame, Label, Entry, Button, LEFT, ttk
 from PIL import Image, ImageTk
 import tkinter.messagebox
 
@@ -108,6 +108,10 @@ class Application:
         self.quantidade.pack(
             side=LEFT,
         )
+        
+        self.varVibracao = BooleanVar()
+        c1 = Checkbutton(self.teste, text='Vibração',variable=self.varVibracao, onvalue=True, offvalue=False)
+        c1.pack(side=LEFT, padx=10)
 
         self.addBtn = Button(self.teste)
         self.addBtn["text"] = "Adicionar"
@@ -118,10 +122,11 @@ class Application:
 
         self.i = 1
 
-        self.treeview = ttk.Treeview(columns=("EQUIPAMENTO", "QUANTIDADE"))
+        self.treeview = ttk.Treeview(columns=("EQUIPAMENTO", "QUANTIDADE", "VIBRAÇÃO"))
         self.treeview.heading("#0", text="ITEM")
         self.treeview.heading("EQUIPAMENTO", text="EQUIPAMENTO")
         self.treeview.heading("QUANTIDADE", text="QUANTIDADE")
+        self.treeview.heading("VIBRAÇÃO", text="VIBRAÇÃO")
         self.treeview.pack()
 
         # BOTÃO
@@ -150,7 +155,8 @@ class Application:
         else:
             item = self.item.get()
             quantidade = self.quantidade.get()
-            self.treeview.insert("", END, text=self.i, values=(item, quantidade))
+            vibracao = self.varVibracao.get()
+            self.treeview.insert("", END, text=self.i, values=(item, quantidade, vibracao))
             self.i += 1
 
     # Função para receber os dados do cliente
@@ -212,7 +218,7 @@ class Application:
         self.doc_garantia()
 
         # Recebe os dados do balanceamento
-        if not self.recebe_dataBalanceamento():
+        if not self.recebe_dataPedido():
             return
 
         # Gera o documento de balanceamento
@@ -260,19 +266,21 @@ class Application:
             tkinter.messagebox.showerror("Erro", "Erro ao gerar o documento!")
 
     # Função para receber os dados do balanceamento
-    def recebe_dataBalanceamento(self):
+    def recebe_dataPedido(self):
         self.itens = []
 
         for child in self.treeview.get_children():
             item = self.treeview.item(child)["text"]
             equipamento = self.treeview.item(child)["values"][0]
             quantidade = self.treeview.item(child)["values"][1]
+            hasVibracao = self.treeview.item(child)["values"][2]
 
             self.itens.append(
                 {
                     "{ITEM}": item,
                     "{EQUIPAMENTO}": equipamento,
                     "{QUANTIDADE}": quantidade,
+                    "{VIBRAÇÃO}": hasVibracao
                 }
             )
 
