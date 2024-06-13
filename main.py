@@ -406,7 +406,7 @@ class Application:
                     try:
                         # Salva o documento
                         os.makedirs(output_vibracao_path, exist_ok=True)
-                        output_vibracao_file_path = "{}/CB-OS-{}-{}.docx".format(
+                        output_vibracao_file_path = "{}/CV-OS-{}-{}.docx".format(
                             output_vibracao_path,
                             dataClient["{OS}"],
                             str(i) + "." + str(j + 1),
@@ -418,7 +418,7 @@ class Application:
                         os.makedirs(output_vibracao_path + "/PDF", exist_ok=True)
                         convert(
                             output_vibracao_file_path,
-                            "{}/PDF/CB-OS-{}-{}.pdf".format(
+                            "{}/PDF/CV-OS-{}-{}.pdf".format(
                                 output_vibracao_path,
                                 dataClient["{OS}"],
                                 str(i) + "." + str(j + 1),
