@@ -2,16 +2,29 @@ import os
 from docx import Document
 from docx2pdf import convert
 
-from tkinter import END, BooleanVar, Checkbutton, Tk, Frame, Label, Entry, Button, LEFT, ttk
+from tkinter import (
+    END,
+    BooleanVar,
+    Checkbutton,
+    Tk,
+    Frame,
+    Label,
+    Entry,
+    Button,
+    LEFT,
+    ttk,
+)
 from PIL import Image, ImageTk
 import tkinter.messagebox
 
 garantia_template_file_path = "template/template_garantia.docx"  # Caminho do arquivo de template do certificado de garantia
 balanceamento_template_file_path = "template/template_balanceamento.docx"  # Caminho do arquivo de template do certificado de balanceamento
-output_garantia_path = (
-    "output/GARANTIA"  # Caminho da pasta de saída para o certificado de garantia
-)
+vibracao_template_file_path = "template/template_vibracao.docx"  # Caminho do arquivo de template do certificado de vibração
+
+output_garantia_path = "output/GARANTIA"  # Caminho da pasta de saída para o certificado de garantia
 output_balanceamento_path = "output/BALANCEAMENTO"  # Caminho da pasta de saída para o certificado de balanceamento
+output_vibracao_path = "output/VIBRAÇÃO"  # Caminho da pasta de saída para o certificado de vibração
+
 os.makedirs(
     output_garantia_path, exist_ok=True
 )  # Cria a pasta de saída, caso não exista
@@ -108,9 +121,15 @@ class Application:
         self.quantidade.pack(
             side=LEFT,
         )
-        
+
         self.varVibracao = BooleanVar()
-        c1 = Checkbutton(self.teste, text='Vibração',variable=self.varVibracao, onvalue=True, offvalue=False)
+        c1 = Checkbutton(
+            self.teste,
+            text="Vibração",
+            variable=self.varVibracao,
+            onvalue=True,
+            offvalue=False,
+        )
         c1.pack(side=LEFT, padx=10)
 
         self.addBtn = Button(self.teste)
@@ -156,7 +175,9 @@ class Application:
             item = self.item.get()
             quantidade = self.quantidade.get()
             vibracao = self.varVibracao.get()
-            self.treeview.insert("", END, text=self.i, values=(item, quantidade, vibracao))
+            self.treeview.insert(
+                "", END, text=self.i, values=(item, quantidade, vibracao)
+            )
             self.i += 1
 
     # Função para receber os dados do cliente
@@ -280,7 +301,7 @@ class Application:
                     "{ITEM}": item,
                     "{EQUIPAMENTO}": equipamento,
                     "{QUANTIDADE}": quantidade,
-                    "{VIBRAÇÃO}": hasVibracao
+                    "{VIBRAÇÃO}": hasVibracao,
                 }
             )
 
@@ -348,11 +369,72 @@ class Application:
                                     "Erro", "Erro ao gerar o documento!"
                                 )
 
+                    if chave == "{VIBRAÇÃO}" and valor == "True":
+                        self.doc_vibracao(item)
+
                 i += 1
 
         except Exception as e:
             print("Error: ", e)
             tkinter.messagebox.showerror("Erro", "Erro ao gerar o documento!")
+
+    def doc_vibracao(self, item):
+        
+        i = 1
+        for chave, valor in item.items():
+            if chave == "{QUANTIDADE}":
+                quantidade = int(valor)
+                # Para cada quantidade do item, criar um documento
+                for j in range(quantidade):
+                    
+                    # TODO - Receber as vibrações por uma nova janela
+                    vib1 = input("Digite a vibração 1: ")
+                    vib2 = input("Digite a vibração 2: ")
+                    
+                    vibracoes = {"{VIB1}": vib1, "{VIB2}": vib2}
+                    
+                    vibracao_template = Document(vibracao_template_file_path)
+                    for paragraph in vibracao_template.paragraphs:
+                        replace_text_in_paragraph(paragraph, "ITEM", str(i))
+                        replace_text_in_paragraph(paragraph, "SUB", str(j + 1))
+                        replace_text_in_paragraph(paragraph, "{EQUIPAMENTO}", item["{EQUIPAMENTO}"])
+                        
+                        for variable_key, variable_value in dataClient.items():
+                            replace_text_in_paragraph(paragraph, variable_key, variable_value)
+                        
+                        for variable_key, variable_value in vibracoes.items():
+                            replace_text_in_paragraph(paragraph, variable_key, variable_value)
+
+                    try:
+                        # Salva o documento
+                        os.makedirs(output_vibracao_path, exist_ok=True)
+                        output_vibracao_file_path = "{}/CB-OS-{}-{}.docx".format(
+                            output_vibracao_path,
+                            dataClient["{OS}"],
+                            str(i) + "." + str(j + 1),
+                        )
+                        vibracao_template.save(output_vibracao_file_path)
+                        print("Docx Done!")
+
+                        # Converte o documento para PDF
+                        os.makedirs(output_vibracao_path + "/PDF", exist_ok=True)
+                        convert(
+                            output_vibracao_file_path,
+                            "{}/PDF/CB-OS-{}-{}.pdf".format(
+                                output_vibracao_path,
+                                dataClient["{OS}"],
+                                str(i) + "." + str(j + 1),
+                            ),
+                        )
+                        print("PDF Done!")
+
+                    except Exception as e:
+                        print("Error: ", e)
+                        tkinter.messagebox.showerror(
+                            "Erro", "Erro ao gerar o documento!"
+                        )
+
+        pass
 
 
 # Inicializa a aplicação
