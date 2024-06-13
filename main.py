@@ -386,12 +386,10 @@ class Application:
                 quantidade = int(valor)
                 # Para cada quantidade do item, criar um documento
                 for j in range(quantidade):
-                    
-                    # TODO - Receber as vibrações por uma nova janela
-                    vib1 = input("Digite a vibração 1: ")
-                    vib2 = input("Digite a vibração 2: ")
-                    
-                    vibracoes = {"{VIB1}": vib1, "{VIB2}": vib2}
+                                        
+                    self.janela_vibracao(item, i, j)
+                                        
+                    vibracoes = {"{VIB1}": self.vib1, "{VIB2}": self.vib2}
                     
                     vibracao_template = Document(vibracao_template_file_path)
                     for paragraph in vibracao_template.paragraphs:
@@ -436,7 +434,46 @@ class Application:
 
         pass
 
+    def janela_vibracao(self, item, i, j):
+        self.janela = Tk()
+        self.janela.title("Vibrações")
+        self.janela.geometry("300x200")
+        
+        self.itemLabel = Label(self.janela, text="Item: " + str(i) + "." + str(j + 1))
+        self.itemLabel["font"] = self.fonte
+        self.itemLabel.pack()
+        self.eqpLabel = Label(self.janela, text="Equipamento: " + item["{EQUIPAMENTO}"])
+        self.eqpLabel["font"] = self.fonte
+        self.eqpLabel.pack()
+        
+        self.vib1Label = Label(self.janela, text="Vibração 1: ")
+        self.vib1Label.pack()
+        
+        self.vibracao1 = Entry(self.janela)
+        self.vibracao1.pack()
+        
+        self.vib2Label = Label(self.janela, text="Vibração 2: ")
+        self.vib2Label.pack()
+        
+        self.vibracao2 = Entry(self.janela)
+        self.vibracao2.pack()
+        
+        self.confirmar = Button(self.janela)
+        self.confirmar["text"] = "Confirmar"
+        self.confirmar["width"] = 10
+        self.confirmar["command"] = self.confirmar_vibracao
+        self.confirmar.pack(pady=10)
+        
+        self.janela.mainloop()
 
+    def confirmar_vibracao(self):
+        self.vib1 = self.vibracao1.get()
+        self.vib2 = self.vibracao2.get()
+        
+        self.janela.quit()
+        self.janela.destroy()
+        
+        
 # Inicializa a aplicação
 root = Tk()
 Application(root)
