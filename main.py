@@ -176,7 +176,7 @@ class Application:
             quantidade = self.quantidade.get()
             vibracao = self.varVibracao.get()
             self.treeview.insert(
-                "", END, text=self.i, values=(item, quantidade, vibracao)
+                "", END, text=str(self.i), values=(item, quantidade, vibracao)
             )
             self.i += 1
 
