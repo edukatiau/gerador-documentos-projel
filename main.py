@@ -138,6 +138,13 @@ class Application:
         self.addBtn["width"] = 10
         self.addBtn["command"] = self.add_item
         self.addBtn.pack(side=LEFT, padx=10)
+        
+        self.deleteBtn = Button(self.teste)
+        self.deleteBtn["text"] = "Deletar itens"
+        self.deleteBtn["font"] = ("Calibri", "12")
+        self.deleteBtn["width"] = 10
+        self.deleteBtn["command"] = self.delete_item
+        self.deleteBtn.pack(side=LEFT, padx=10)
 
         self.i = 1
 
@@ -155,7 +162,7 @@ class Application:
         self.container5.pack()
 
         self.gerar = Button(self.container5)
-        self.gerar["text"] = "Gerar Garantia"
+        self.gerar["text"] = "Gerar Documentos"
         self.gerar["font"] = ("Calibri", "22")
         self.gerar["width"] = 20
         self.gerar["command"] = self.gerar_doc
@@ -179,6 +186,12 @@ class Application:
                 "", END, text=str(self.i), values=(item, quantidade, vibracao)
             )
             self.i += 1
+
+    # Função para deletar item na treeview
+    def delete_item(self):
+        for item in self.treeview.get_children():
+            self.treeview.delete(item)
+            self.i = 1
 
     # Função para receber os dados do cliente
     def recebe_dataClient(self):
