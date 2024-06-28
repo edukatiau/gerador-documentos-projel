@@ -282,15 +282,26 @@ class Application:
             output_garantia_file_path = "{}/CG-OS-{}.docx".format(
                 output_garantia_path, dataClient["{OS}"]
             )
+            
+            if (os.path.exists(output_garantia_file_path)):
+                output_garantia_file_path = "{}/CG-OS-{} NF {}.docx".format(
+                    output_garantia_path, dataClient["{OS}"], dataClient["{NF}"]
+                )
+            
             garantia_template.save(output_garantia_file_path)
             print("Docx Done!")
 
             # Converte o documento para PDF
             os.makedirs(output_garantia_path + "/PDF", exist_ok=True)
-            convert(
-                output_garantia_file_path,
-                "{}/PDF/CG-OS-{}.pdf".format(output_garantia_path, dataClient["{OS}"]),
-            )
+            
+            if os.path.exists(output_garantia_file_path):
+                pdf_file_path = "{}/PDF/CG-OS-{} NF {}.pdf".format(output_garantia_path, dataClient["{OS}"], dataClient["{NF}"])
+            else:
+                pdf_file_path = "{}/PDF/CG-OS-{}.pdf".format(output_garantia_path, dataClient["{OS}"])
+
+            # Realiza a conversão para PDF usando o caminho determinado
+            convert(output_garantia_file_path, pdf_file_path)
+                
             print("PDF Done!")
 
             tkinter.messagebox.showinfo("Sucesso", "Documento gerado com sucesso!")
